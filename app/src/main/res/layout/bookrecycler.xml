@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/bookTitleView"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="21dp"
+        android:text="TITLE"
+        app:layout_constraintBaseline_toBaselineOf="@+id/bookAuthorView"
+        app:layout_constraintEnd_toStartOf="@+id/bookAuthorView"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/bookAuthorView"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="57dp"
+        android:layout_marginEnd="16dp"
+        android:text="AUTHOR"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bookTitleView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/dividerImage"
+        android:layout_width="378dp"
+        android:layout_height="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookAuthorView"
+        app:srcCompat="@android:drawable/divider_horizontal_textfield" />
+</androidx.constraintlayout.widget.ConstraintLayout>
