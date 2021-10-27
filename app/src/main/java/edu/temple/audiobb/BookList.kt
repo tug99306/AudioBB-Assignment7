@@ -19,4 +19,6 @@ class BookList : Serializable {
     fun getSize() : Int{
         return bookList.size
     }
+
+
 }

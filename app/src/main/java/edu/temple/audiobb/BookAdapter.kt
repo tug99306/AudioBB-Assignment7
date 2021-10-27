@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.TextView
 
-class BookAdapter(_context: Context, var _bookList:BookList, val clickListener : (bookInt: Int) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(_context: Context, var _bookList:BookList, private val clickListener : (bookInt: Int) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private val inflater = LayoutInflater.from(_context)
 

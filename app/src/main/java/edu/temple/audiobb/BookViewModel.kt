@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 
 class BookViewModel : ViewModel() {
 
+    private var isEmpty : Boolean = true
+
     private val book : MutableLiveData<Book> by lazy {
         MutableLiveData<Book>()
     }
@@ -16,6 +18,10 @@ class BookViewModel : ViewModel() {
 
     fun setBook(_book: Book){
         book.value = _book
+        isEmpty = false
     }
 
+    fun isBookEmpty() : Boolean{
+        return isEmpty
+    }
 }
