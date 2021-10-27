@@ -1,14 +1,13 @@
 package edu.temple.audiobb
 
 import android.content.Context
-import android.text.Layout
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.TextView
 
-class BookAdapter(_context: Context, var _bookList:BookList, private val clickListener : (bookInt: Int) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(_context: Context, private var _bookList:BookList, private val clickListener : (bookInt: Int) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private val inflater = LayoutInflater.from(_context)
 
@@ -23,7 +22,7 @@ class BookAdapter(_context: Context, var _bookList:BookList, private val clickLi
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookAdapter.BookViewHolder {
-        var view = inflater.inflate(R.layout.bookrecycler, null)
+        val view = inflater.inflate(R.layout.bookrecycler, null)
         return BookViewHolder(view, clickListener)
     }
 

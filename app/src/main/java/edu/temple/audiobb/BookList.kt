@@ -9,9 +9,6 @@ class BookList : Serializable {
         bookList.add(_book)
     }
 
-    fun remove(_book : Book){
-        bookList.remove(_book)
-    }
     fun getBook(int: Int) : Book{
         return bookList[int]
     }

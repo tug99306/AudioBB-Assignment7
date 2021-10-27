@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
 
-    var twoFragment = false
-    lateinit var bookViewModel: BookViewModel
+    private var twoFragment = false
+    private lateinit var bookViewModel: BookViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
 
         //Pop redundant DetailsFragment from stack if book is selected to set up landscape view
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment &&
-            !twoFragment
+            twoFragment
         ) {
             supportFragmentManager.popBackStack()
         }
@@ -34,8 +34,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) is BookDetailsFragment &&
             !twoFragment
         ) {
-            if (ViewModelProvider(this).get(BookViewModel::class.java).getBook().value?.title != ""
-                && !bookViewModel.isBookEmpty()) {
+            if (ViewModelProvider(this).get(BookViewModel::class.java).getBook().value?.title != "") {
                 selectionMade()
             }
         }
@@ -54,7 +53,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         }
     }
 
-    fun bookArray (bookList : BookList){
+    private fun bookArray (bookList : BookList){
         bookList.add(Book("Harry Potter","J.K. Rowling"))
         bookList.add(Book("The Hunger Games","Suzanne Collins"))
         bookList.add(Book("Divergent","Veronica Roth"))
@@ -90,6 +89,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
 
     override fun onBackPressed(){
         super.onBackPressed()
-        ViewModelProvider(this).get(BookViewModel::class.java).setBook(Book("",""))
+        bookViewModel.setBook(Book("",""))
     }
 }
