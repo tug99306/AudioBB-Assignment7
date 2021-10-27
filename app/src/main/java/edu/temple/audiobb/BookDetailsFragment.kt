@@ -12,8 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+
 
 /**
  * A simple [Fragment] subclass.
@@ -22,7 +21,6 @@ private const val ARG_PARAM2 = "param2"
  */
 class BookDetailsFragment : Fragment() {
 
-    lateinit var  layout : View
     lateinit var bookName: TextView
     lateinit var bookAuthor : TextView
 
@@ -40,8 +38,8 @@ class BookDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bookName = layout.findViewById(R.id.detailBookTitle)
-        bookAuthor = layout.findViewById(R.id.detailBookAuthor)
+        bookName = view.findViewById(R.id.detailBookTitle)
+        bookAuthor = view.findViewById(R.id.detailBookAuthor)
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getBook()

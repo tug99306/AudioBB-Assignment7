@@ -40,6 +40,7 @@ class BookListFragment : Fragment() {
         val adapter = BookAdapter(requireContext(), mainBookList){
             position -> clickListener(position)
         }
+        recycler.adapter = adapter
         return layout
     }
 
