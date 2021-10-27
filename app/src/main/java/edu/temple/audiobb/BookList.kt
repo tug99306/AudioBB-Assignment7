@@ -1,19 +1,22 @@
 package edu.temple.audiobb
+import java.io.Serializable
 
-class BookList(val _bookList: ArrayList<Book>) {
+class BookList : Serializable {
+
+    private val bookList = ArrayList<Book>()
 
     fun add(_book : Book){
-        _bookList.add(_book)
+        bookList.add(_book)
     }
 
     fun remove(_book : Book){
-        _bookList.remove(_book)
+        bookList.remove(_book)
     }
     fun getBook(int: Int) : Book{
-        return _bookList[int]
+        return bookList[int]
     }
 
     fun getSize() : Int{
-        return _bookList.size
+        return bookList.size
     }
 }
