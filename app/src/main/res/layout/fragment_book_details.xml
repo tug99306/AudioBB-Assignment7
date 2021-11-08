@@ -8,28 +8,34 @@
 
     <TextView
         android:id="@+id/detailBookTitle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="1dp"
+        android:layout_width="409dp"
+        android:layout_height="171dp"
         android:fontFamily="sans-serif-black"
         android:gravity="center"
         android:textColor="#000000"
-        android:textSize="34sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/detailBookAuthor"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/detailBookAuthor"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="3dp"
+        android:layout_width="409dp"
+        android:layout_height="122dp"
         android:gravity="center"
         android:textColor="#000000"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/coverImageView"
+        android:layout_width="409dp"
+        android:layout_height="422dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toTopOf="@+id/detailBookTitle"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailBookTitle" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

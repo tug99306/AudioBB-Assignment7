@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         }
     }
 
-    private fun bookArray (bookList : BookList){
+    /*private fun bookArray (bookList : BookList){
         bookList.add(Book("Harry Potter","J.K. Rowling"))
         bookList.add(Book("The Hunger Games","Suzanne Collins"))
         bookList.add(Book("Divergent","Veronica Roth"))
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         bookList.add(Book("Malibu Rising","Taylor Jenkins Reid"))
         bookList.add(Book("The Rose Code","Kate Quinn"))
         bookList.add(Book("One Last Stop","Casey McQuiston"))
-    }
+    }*/
 
     // A message from the fragment whenever a book is selected
     override fun selectionMade(){
