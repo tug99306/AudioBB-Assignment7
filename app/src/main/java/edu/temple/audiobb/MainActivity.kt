@@ -1,27 +1,39 @@
 package edu.temple.audiobb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
 
     private var twoFragment = false
     private lateinit var bookViewModel: BookViewModel
+    private lateinit var listViewModel: ListViewModel
+    var bookList : BookList = BookList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         twoFragment = findViewById<View>(R.id.fragmentContainerView2) != null
-
+        listViewModel = ViewModelProvider(this).get(ListViewModel::class.java)
         bookViewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        listViewModel.setList(bookList)
 
-        val booksList = BookList()
-        bookArray(booksList)
+        val searchButton = findViewById<Button>(R.id.searchButton)
+        searchButton.setOnClickListener {
+            val intent = Intent(this, BookSearchActivity::class.java).apply {
+                putExtra("booksList", bookList)
+            }
+            startActivityForResult(intent, 1)
+        }
 
-        val bookListFragment = BookListFragment.newInstance(booksList)
+
+        //val bookListFragment = BookListFragment.newInstance(booksList)
 
         //Pop redundant DetailsFragment from stack if book is selected to set up landscape view
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment &&
@@ -42,7 +54,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         //Add BookListFragment on app startup
         if (savedInstanceState == null){
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, bookListFragment)
+                .replace(R.id.fragmentContainerView1, BookListFragment.newInstance())
                 .commit()
         }
          //When second fragment is available, place an instance of BookDetailsFragment
@@ -89,6 +101,26 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
 
     override fun onBackPressed(){
         super.onBackPressed()
-        bookViewModel.setBook(Book("",""))
+        bookViewModel.setBook(Book("","",0, ""))
+    }
+
+    override fun onResume(){
+        super .onResume()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView1, BookListFragment.newInstance())
+            .commit()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 1){
+            if (data != null){
+                val resultBookList = data.getSerializableExtra("list") as BookList
+                listViewModel.setList(resultBookList)
+
+
+            }
+        }
+
     }
 }

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,8 +17,8 @@ private const val  ARG_PARAM1 = "param1"
 class BookListFragment : Fragment() {
     private lateinit var  viewModel : BookViewModel
     private lateinit var recycler : RecyclerView
-    private lateinit var mainBookList: BookList
-    private lateinit var layout : View
+    lateinit var mainBookList: BookList
+    private lateinit var listViewModel: ListViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,16 +32,28 @@ class BookListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.fragment_book_list, container, false)
+        val layout = inflater.inflate(R.layout.fragment_book_list, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
+        listViewModel = ViewModelProvider(requireActivity()).get(ListViewModel::class.java)
         recycler = layout.findViewById(R.id.bookRecycler)
-        recycler.layoutManager = GridLayoutManager(requireContext(),1)
+        //recycler.layoutManager = GridLayoutManager(requireContext(),1)
 
-        val adapter = BookAdapter(requireContext(), mainBookList){
-            position -> clickListener(position)
-        }
-        recycler.adapter = adapter
+        //val adapter = BookAdapter(requireContext(), mainBookList){
+            //position -> clickListener(position)
+        //}
+        //recycler.adapter = adapter
         return layout
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        listViewModel.getList().observe(viewLifecycleOwner, Observer { it->
+            mainBookList = it
+            recycler.adapter = BookAdapter(requireContext(), mainBookList){
+                    position -> clickListener(position)
+
+            }
+        })
     }
 
 
@@ -50,12 +63,12 @@ class BookListFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(param1: BookList) =
-            BookListFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARG_PARAM1, param1)
-                }
-            }
+        fun newInstance() =
+            BookListFragment()//.apply {
+                //arguments = Bundle().apply {
+                    //putSerializable(ARG_PARAM1, param1)
+                //}
+            //}
     }
     interface EventInterface{
         fun selectionMade()
