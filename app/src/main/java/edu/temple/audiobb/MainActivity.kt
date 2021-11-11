@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.app.Activity
 import android.util.Log
-import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModelProvider
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -15,10 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search {
 
     private var twoFragment = false
-    var initialLoad = false
+    private var initialLoad = false
     private lateinit var bookViewModel: BookViewModel
-    var bookList : BookList = BookList()
-    lateinit var startForResult: ActivityResultLauncher<Intent>
+    private var bookList : BookList = BookList()
+    private lateinit var startForResult: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
