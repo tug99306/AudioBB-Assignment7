@@ -5,26 +5,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val  ARG_PARAM1 = "param1"
+
 
 class BookListFragment : Fragment() {
     private lateinit var  viewModel : BookViewModel
     private lateinit var recycler : RecyclerView
     lateinit var mainBookList: BookList
-    private lateinit var listViewModel: ListViewModel
+    lateinit var layout : View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            mainBookList = it.getSerializable(ARG_PARAM1) as BookList
+            mainBookList = it.getSerializable("bookList") as BookList
         }
     }
 
@@ -32,10 +31,10 @@ class BookListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val layout = inflater.inflate(R.layout.fragment_book_list, container, false)
-        viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
-        listViewModel = ViewModelProvider(requireActivity()).get(ListViewModel::class.java)
-        recycler = layout.findViewById(R.id.bookRecycler)
+        layout = inflater.inflate(R.layout.fragment_book_list, container, false)
+        //viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
+        //listViewModel = ViewModelProvider(requireActivity()).get(ListViewModel::class.java)
+        //recycler = layout.findViewById(R.id.bookRecycler)
         //recycler.layoutManager = GridLayoutManager(requireContext(),1)
 
         //val adapter = BookAdapter(requireContext(), mainBookList){
@@ -47,13 +46,15 @@ class BookListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listViewModel.getList().observe(viewLifecycleOwner, Observer { it->
-            mainBookList = it
-            recycler.adapter = BookAdapter(requireContext(), mainBookList){
-                    position -> clickListener(position)
+        recycler = layout.findViewById(R.id.bookRecycler)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+        val adapter = BookAdapter(requireContext(), mainBookList){
+            updateViewModel(recycler.getChildAdapterPosition(it))
+        }
+        recycler.adapter = adapter
 
-            }
-        })
+        val searchButton = layout.findViewById<Button>(R.id.searchListButton)
+        searchButton.setOnClickListener{(requireActivity() as Search).doSearch()}
     }
 
 
@@ -63,15 +64,41 @@ class BookListFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() =
-            BookListFragment()//.apply {
-                //arguments = Bundle().apply {
-                    //putSerializable(ARG_PARAM1, param1)
-                //}
-            //}
+        fun newInstance(_bookList: BookList): BookListFragment {
+            val frag = BookListFragment().apply {
+                mainBookList = _bookList
+
+                arguments = Bundle().apply {
+                    putSerializable("bookList", mainBookList)
+                }
+            }
+            return frag
+        }
     }
+
     interface EventInterface{
         fun selectionMade()
+    }
+    interface Search{
+        fun doSearch()
+    }
+
+    private fun updateViewModel(index:Int){
+        ViewModelProvider(requireActivity())
+            .get(BookViewModel::class.java)
+            .setBook(mainBookList.getBook(index))
+        (requireActivity() as EventInterface).selectionMade()
+    }
+
+    fun updateBookList(bookList: BookList){
+        this.mainBookList = bookList
+        val adapter = BookAdapter(requireContext(), bookList){
+            updateViewModel(recycler.getChildAdapterPosition(it))
+        }
+        recycler.adapter = adapter
+        arguments = Bundle().apply{
+            putSerializable("bookList", bookList)
+        }
     }
 
 }

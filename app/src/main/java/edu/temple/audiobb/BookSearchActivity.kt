@@ -16,19 +16,18 @@ import org.json.JSONException
 
 
 class BookSearchActivity : AppCompatActivity() {
-    lateinit var bookList: BookList
-    val searchEditText : EditText by lazy {
-        findViewById(R.id.searchEditText)
-    }
-    val searchButton : Button by lazy {
-        findViewById(R.id.searchButton)
-    }
+    val bookList = BookList()
+
     val volleyQueue : RequestQueue by lazy {
         Volley.newRequestQueue(this)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_search)
+
+        val searchEditText = findViewById<EditText>(R.id.searchEditText)
+        val searchButton = findViewById<Button>(R.id.searchButton)
 
         searchButton.setOnClickListener {
             fetchBook(searchEditText.text.toString())
@@ -40,23 +39,20 @@ class BookSearchActivity : AppCompatActivity() {
 
         volleyQueue.add(
             JsonArrayRequest(
-                Request.Method.GET
-                , url
-                , null
-                ,
+                Request.Method.GET, url, null,
                 {
                     Log.d("Response", it.toString())
                     try{
                         for(i in 0 until it.length()){
                             val jsonObject = it.getJSONObject(i)
-                            val book = Book(jsonObject.getString("title"),
-                                jsonObject.getString("author"),
-                                jsonObject.getInt("id"),
-                                jsonObject.getString("coverURL"))
+                            val book = Book(jsonObject.getInt("id"),
+                            jsonObject.getString("title"),
+                            jsonObject.getString("author"),
+                            jsonObject.getString("cover_url"))
                             bookList.add(book)
                         }
                         val resultIntent = intent
-                        resultIntent.putExtra("book", bookList)
+                        resultIntent.putExtra("jsonbooklist", bookList)
                         setResult(RESULT_OK, resultIntent)
                         finish()
                     }

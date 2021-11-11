@@ -7,31 +7,33 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.TextView
 
-class BookAdapter(_context: Context, private var _bookList:BookList, private val clickListener : (bookInt: Int) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(_context: Context, _books: BookList, _onClick: View.OnClickListener) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private val inflater = LayoutInflater.from(_context)
+    private val books = _books
+    private val onClick = _onClick
 
-    class BookViewHolder(itemView: View, val clickListener : (bookInt:Int) -> Unit) :  RecyclerView.ViewHolder(itemView){
-        val bookTitleView : TextView = itemView.findViewById(R.id.bookTitleView)
-        val bookAuthorView : TextView = itemView.findViewById(R.id.bookAuthorView)
 
-        init {
-            itemView.setOnClickListener {
-                clickListener(adapterPosition)
-            }
+    class BookViewHolder(_itemView: View) : RecyclerView.ViewHolder(_itemView){
+        val view = _itemView
+        val bookTitleView : TextView = _itemView.findViewById(R.id.bookTitleView)
+        val bookAuthorView : TextView = _itemView.findViewById(R.id.bookAuthorView)
+
+
         }
-    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookAdapter.BookViewHolder {
         val view = inflater.inflate(R.layout.bookrecycler, null)
-        return BookViewHolder(view, clickListener)
+        return BookViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: BookAdapter.BookViewHolder, position: Int) {
-        holder.bookTitleView.text = _bookList.getBook(position).title
-        holder.bookAuthorView.text = _bookList.getBook(position).author
+    override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
+        holder.bookTitleView.text = books.getBook(position).title
+        holder.bookAuthorView.text = books.getBook(position).author
+        holder.view.setOnClickListener(onClick)
     }
 
     override fun getItemCount(): Int {
-        return _bookList.getSize()
+        return books.getSize()
     }
 }

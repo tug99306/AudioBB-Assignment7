@@ -31,11 +31,12 @@
 
     <ImageView
         android:id="@+id/coverImageView"
-        android:layout_width="409dp"
-        android:layout_height="422dp"
+        android:layout_width="365dp"
+        android:layout_height="358dp"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintBottom_toTopOf="@+id/detailBookTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.887" />
 </androidx.constraintlayout.widget.ConstraintLayout>

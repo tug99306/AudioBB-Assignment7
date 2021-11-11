@@ -4,79 +4,60 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.app.Activity
+import android.util.Log
 import android.widget.Button
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModelProvider
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 
-class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
+
+class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search {
 
     private var twoFragment = false
+    var initialLoad = false
     private lateinit var bookViewModel: BookViewModel
-    private lateinit var listViewModel: ListViewModel
     var bookList : BookList = BookList()
+    lateinit var startForResult: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         twoFragment = findViewById<View>(R.id.fragmentContainerView2) != null
-        listViewModel = ViewModelProvider(this).get(ListViewModel::class.java)
         bookViewModel = ViewModelProvider(this).get(BookViewModel::class.java)
-        listViewModel.setList(bookList)
 
-        val searchButton = findViewById<Button>(R.id.searchButton)
-        searchButton.setOnClickListener {
-            val intent = Intent(this, BookSearchActivity::class.java).apply {
-                putExtra("booksList", bookList)
-            }
-            startActivityForResult(intent, 1)
-        }
-
-
-        //val bookListFragment = BookListFragment.newInstance(booksList)
-
-        //Pop redundant DetailsFragment from stack if book is selected to set up landscape view
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment &&
-            twoFragment
-        ) {
-            supportFragmentManager.popBackStack()
-        }
-
-        //Open a BookDetailsFragment in portrait mode if the BookDetailsFragment is displaying a book in landscape
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) is BookDetailsFragment &&
-            !twoFragment
-        ) {
-            if (ViewModelProvider(this).get(BookViewModel::class.java).getBook().value?.title != "") {
-                selectionMade()
+        startForResult = registerForActivityResult(StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                if (it.data != null) {
+                    val jsonBook = it.data?.getSerializableExtra("jsonbooklist") as BookList
+                    bookList.clear()
+                    for (i in 0 until jsonBook.getSize()) {
+                        Log.i("Received Book:", jsonBook.getBook(i).title)
+                        bookList.add(jsonBook.getBook(i))
+                    }
+                    if (initialLoad) {
+                        fragmentInit()
+                        initialLoad = false
+                    } else {
+                        if (supportFragmentManager.fragments[0] !is BookListFragment) {
+                            (supportFragmentManager.fragments[1] as BookListFragment)
+                                .updateBookList(bookList)
+                        } else {
+                            (supportFragmentManager.fragments[0] as BookListFragment)
+                                .updateBookList(bookList)
+                        }
+                    }
+                }
             }
         }
-
-        //Add BookListFragment on app startup
-        if (savedInstanceState == null){
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, BookListFragment.newInstance())
-                .commit()
-        }
-         //When second fragment is available, place an instance of BookDetailsFragment
-        if(twoFragment){
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView2, BookDetailsFragment())
-                .commit()
+        if (savedInstanceState == null) {
+            initialLoad = true
+            doSearch()
+        } else {
+            fragmentInit()
         }
     }
-
-    /*private fun bookArray (bookList : BookList){
-        bookList.add(Book("Harry Potter","J.K. Rowling"))
-        bookList.add(Book("The Hunger Games","Suzanne Collins"))
-        bookList.add(Book("Divergent","Veronica Roth"))
-        bookList.add(Book("The Four Winds","Kristin Hannah"))
-        bookList.add(Book("The Lost Apothecary","Sarah Penner"))
-        bookList.add(Book("The Push","Ashley Audrain"))
-        bookList.add(Book("The Paris Library","Janet Skeslien Charles"))
-        bookList.add(Book("Malibu Rising","Taylor Jenkins Reid"))
-        bookList.add(Book("The Rose Code","Kate Quinn"))
-        bookList.add(Book("One Last Stop","Casey McQuiston"))
-    }*/
 
     // A message from the fragment whenever a book is selected
     override fun selectionMade(){
@@ -84,7 +65,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
         //Replace BookListFragment with BookDetailsFragment when a book is selected in portrait mode
         if(!twoFragment) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, BookDetailsFragment())
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
@@ -92,35 +73,53 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface {
             //Add BookDetailsFragment to Fragment2 when a book is selected in landscape mode
             if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null){
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView2, BookDetailsFragment())
+                    .replace(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
                     .addToBackStack(null)
                     .commit()
             }
         }
     }
+    private fun fragmentInit(){
+
+    if(initialLoad) {
+        bookViewModel.setBook(Book(-1,"","", ""))
+        if (twoFragment) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
+                .commit()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+        if(twoFragment){
+            if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment){
+                supportFragmentManager.popBackStack()
+            }
+            if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null){
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
+                    .commit()
+            }
+        }else if (bookViewModel.getBook().value != Book(-1,"","", "")){
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
+
+    }
 
     override fun onBackPressed(){
         super.onBackPressed()
-        bookViewModel.setBook(Book("","",0, ""))
+        bookViewModel.setBook(Book(-1,"","", ""))
     }
 
-    override fun onResume(){
-        super .onResume()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerView1, BookListFragment.newInstance())
-            .commit()
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 1){
-            if (data != null){
-                val resultBookList = data.getSerializableExtra("list") as BookList
-                listViewModel.setList(resultBookList)
-
-
-            }
-        }
-
+    override fun doSearch(){
+        startForResult.launch(Intent(this, BookSearchActivity::class.java))
     }
 }

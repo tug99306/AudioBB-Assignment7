@@ -17,5 +17,9 @@ class BookList : Serializable {
         return bookList.size
     }
 
+    fun clear(){
+        bookList.clear()
+    }
+
 
 }

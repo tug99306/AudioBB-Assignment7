@@ -1,11 +1,4 @@
 package edu.temple.audiobb
+import java.io.Serializable
 
-class Book (val title : String, val author : String, val id : Int, val coverURL : String){
-
-    fun getBookTitle() : String{
-        return title
-    }
-    fun getBookAuthor() : String {
-        return author
-    }
-}
+data class Book (val id : Int, val title : String, val author : String,  val cover_url : String): Serializable

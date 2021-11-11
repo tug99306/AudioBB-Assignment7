@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso
  */
 class BookDetailsFragment : Fragment() {
 
+    lateinit var layout: View
     lateinit var bookName: TextView
     lateinit var bookAuthor : TextView
     lateinit var bookImage : ImageView
@@ -34,28 +35,36 @@ class BookDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_book_details, container, false)
+        layout = inflater.inflate(R.layout.fragment_book_details, container, false)
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         bookName = view.findViewById(R.id.detailBookTitle)
         bookAuthor = view.findViewById(R.id.detailBookAuthor)
         bookImage = view.findViewById(R.id.coverImageView)
+
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getBook()
-            .observe(requireActivity()) {
-                bookDetails(it)
-            }
+            .observe(viewLifecycleOwner, {updateDetails()})
     }
 
-    private fun bookDetails (_book : Book){
-        bookName.text = _book.title
-        bookAuthor.text = _book.author
+    private fun updateDetails (){
+        val book = ViewModelProvider(requireActivity())
+            .get(BookViewModel::class.java)
+            .getBook()
+        bookName.text = book.value?.title
+        bookAuthor.text = book.value?.author
         Picasso.get()
-            .load(_book.coverURL)
+            .load(book.value?.cover_url)
             .into(bookImage)
+    }
+
+    companion object{
+        fun newInstance() = BookDetailsFragment()
     }
 
 
