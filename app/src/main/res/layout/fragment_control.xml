@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ControlFragment">
+    tools:context=".ControlFragment" >
 
-    <!-- TODO: Update blank fragment layout -->
+    <SeekBar
+        android:id="@+id/durationBar"
+        android:layout_width="331dp"
+        android:layout_height="22dp"
+        tools:layout_editor_absoluteX="40dp"
+        tools:layout_editor_absoluteY="94dp" />
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        app:icon="@android:drawable/ic_media_play"
+        tools:layout_editor_absoluteX="39dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/pauseButton"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:gravity="center|center_horizontal|center_vertical"
+        app:icon="@android:drawable/ic_media_pause"
+        tools:layout_editor_absoluteX="125dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="59dp"
+        android:layout_height="41dp"
+        app:icon="@android:drawable/picture_frame"
+        tools:layout_editor_absoluteX="213dp"
+        tools:layout_editor_absoluteY="15dp" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        tools:layout_editor_absoluteX="39dp"
+        tools:layout_editor_absoluteY="67dp" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/durationText"
+        android:layout_width="59dp"
+        android:layout_height="25dp"
+        tools:layout_editor_absoluteX="313dp"
+        tools:layout_editor_absoluteY="116dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
