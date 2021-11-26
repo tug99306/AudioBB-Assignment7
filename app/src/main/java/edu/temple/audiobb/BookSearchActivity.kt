@@ -14,7 +14,7 @@ import org.json.JSONException
 
 
 class BookSearchActivity : AppCompatActivity() {
-    val bookList = BookList()
+    var bookList = BookList()
 
     val volleyQueue : RequestQueue by lazy {
         Volley.newRequestQueue(this)
@@ -46,7 +46,8 @@ class BookSearchActivity : AppCompatActivity() {
                             val book = Book(jsonObject.getInt("id"),
                             jsonObject.getString("title"),
                             jsonObject.getString("author"),
-                            jsonObject.getString("cover_url"))
+                            jsonObject.getString("cover_url"),
+                            jsonObject.getInt("duration"))
                             bookList.add(book)
                         }
                         val resultIntent = intent
@@ -56,6 +57,7 @@ class BookSearchActivity : AppCompatActivity() {
                     }
                     catch (e : JSONException){
                         e.printStackTrace()
+                        finish()
                     }
 
 
