@@ -1,8 +1,11 @@
 package edu.temple.audiobb
+import androidx.lifecycle.ViewModel
 import java.io.Serializable
 
-class BookList : Serializable {
-
+class BookList : ViewModel(), Serializable {
+    companion object {
+        val BOOKLIST_KEY = "bookList"
+    }
     private val bookList = ArrayList<Book>()
 
     fun add(_book : Book){
@@ -19,6 +22,11 @@ class BookList : Serializable {
 
     fun clear(){
         bookList.clear()
+    }
+
+    fun addBooks (newBookList: BookList){
+        bookList.clear()
+        bookList.addAll(newBookList.bookList)
     }
 
 
