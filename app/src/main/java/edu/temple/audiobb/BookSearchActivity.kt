@@ -15,9 +15,9 @@ import org.json.JSONException
 
 
 class BookSearchActivity : AppCompatActivity() {
-    var bookList = BookList()
+    private var bookList = BookList()
 
-    val volleyQueue : RequestQueue by lazy {
+    private val volleyQueue : RequestQueue by lazy {
         Volley.newRequestQueue(this)
     }
 
