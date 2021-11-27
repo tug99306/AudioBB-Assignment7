@@ -9,37 +9,44 @@
 
     <TextView
         android:id="@+id/durationText"
-        android:layout_width="29dp"
-        android:layout_height="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="4dp"
         android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/durationBar"
-        tools:layout_editor_absoluteY="107dp" />
+        app:layout_constraintBottom_toTopOf="@id/titleText"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <SeekBar
         android:id="@+id/durationBar"
         android:layout_width="298dp"
         android:layout_height="39dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
         android:clickable="true"
-        tools:layout_editor_absoluteX="56dp"
-        tools:layout_editor_absoluteY="104dp" />
+        app:layout_constraintBottom_toTopOf="@+id/titleText"
+        app:layout_constraintEnd_toStartOf="@id/durationText"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="4dp"
         android:text="now playing:"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/durationBar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playButton" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/pauseButton"
-        android:layout_width="69dp"
-        android:layout_height="44dp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="15dp"
@@ -50,7 +57,7 @@
         app:iconSize="20dp"
         app:layout_constraintBottom_toTopOf="@id/durationBar"
         app:layout_constraintEnd_toStartOf="@+id/playButton"
-        app:layout_constraintHorizontal_bias="0.638"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
@@ -58,10 +65,10 @@
 
     <Button
         android:id="@+id/playButton"
-        android:layout_width="69dp"
-        android:layout_height="44dp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="15dp"
         android:textAlignment="center"
         app:icon="@android:drawable/ic_media_play"
@@ -75,10 +82,10 @@
 
     <Button
         android:id="@+id/stopButton"
-        android:layout_width="69dp"
-        android:layout_height="44dp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginEnd="56dp"
         android:layout_marginBottom="15dp"
         android:textAlignment="center"
         app:icon="?android:attr/textCursorDrawable"
