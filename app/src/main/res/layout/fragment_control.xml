@@ -4,54 +4,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ControlFragment" >
+    android:layout_height="wrap_content"
+    tools:context=".ControlFragment">
+
+    <TextView
+        android:id="@+id/durationText"
+        android:layout_width="29dp"
+        android:layout_height="32dp"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/durationBar"
+        tools:layout_editor_absoluteY="107dp" />
 
     <SeekBar
         android:id="@+id/durationBar"
-        android:layout_width="331dp"
-        android:layout_height="22dp"
-        tools:layout_editor_absoluteX="40dp"
-        tools:layout_editor_absoluteY="94dp" />
-
-    <Button
-        android:id="@+id/playButton"
-        android:layout_width="64dp"
-        android:layout_height="40dp"
-        app:icon="@android:drawable/ic_media_play"
-        tools:layout_editor_absoluteX="39dp"
-        tools:layout_editor_absoluteY="16dp" />
-
-    <Button
-        android:id="@+id/pauseButton"
-        android:layout_width="64dp"
-        android:layout_height="40dp"
-        android:gravity="center|center_horizontal|center_vertical"
-        app:icon="@android:drawable/ic_media_pause"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="16dp" />
-
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="59dp"
-        android:layout_height="41dp"
-        app:icon="@android:drawable/picture_frame"
-        tools:layout_editor_absoluteX="213dp"
-        tools:layout_editor_absoluteY="15dp" />
+        android:layout_width="298dp"
+        android:layout_height="39dp"
+        android:clickable="true"
+        tools:layout_editor_absoluteX="56dp"
+        tools:layout_editor_absoluteY="104dp" />
 
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Title"
-        tools:layout_editor_absoluteX="39dp"
-        tools:layout_editor_absoluteY="67dp" />
+        android:layout_marginTop="14dp"
+        android:text="now playing:"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/durationBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playButton" />
 
-    <TextView
-        android:id="@+id/durationText"
-        android:layout_width="59dp"
-        android:layout_height="25dp"
-        tools:layout_editor_absoluteX="313dp"
-        tools:layout_editor_absoluteY="116dp" />
+    <Button
+        android:id="@+id/pauseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:textAlignment="center"
+        app:icon="@android:drawable/ic_media_pause"
+        app:iconGravity="textEnd"
+        app:iconSize="20dp"
+        app:layout_constraintBottom_toTopOf="@id/durationBar"
+        app:layout_constraintEnd_toStartOf="@+id/playButton"
+        app:layout_constraintHorizontal_bias="0.638"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="15dp"
+        android:textAlignment="center"
+        app:icon="@android:drawable/ic_media_play"
+        app:iconGravity="textEnd"
+        app:iconSize="20dp"
+        app:layout_constraintBottom_toTopOf="@id/durationBar"
+        app:layout_constraintEnd_toStartOf="@+id/stopButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="15dp"
+        android:textAlignment="center"
+        app:icon="?android:attr/textCursorDrawable"
+        app:iconGravity="textEnd"
+        app:iconSize="15dp"
+        app:layout_constraintBottom_toTopOf="@id/durationText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.001"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
