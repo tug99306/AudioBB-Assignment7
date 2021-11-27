@@ -20,6 +20,7 @@ import org.w3c.dom.Text
 
 
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search, ControlFragment.ControlClick{
+
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     var connection = false
     private lateinit var bookListFragment: BookListFragment
