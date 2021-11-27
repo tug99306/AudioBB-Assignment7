@@ -5,55 +5,92 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ControlFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ControlFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var playButton: Button
+    lateinit var stopButton: Button
+    lateinit var pauseButton: Button
+    lateinit var durationBar: SeekBar
+    lateinit var titleText: TextView
+    lateinit var durationText: TextView
+    var durationInt: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_control, container, false)
+        val layout = inflater.inflate(R.layout.fragment_control, container, false)
+
+        playButton = layout.findViewById(R.id.playButton)
+        pauseButton = layout.findViewById(R.id.pauseButton)
+        stopButton = layout.findViewById(R.id.stopButton)
+        titleText = layout.findViewById(R.id.titleText)
+        durationBar = layout.findViewById(R.id.durationBar)
+        durationText = layout.findViewById(R.id.durationText)
+
+        return layout
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ControlFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ControlFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val bookViewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
+        playButton.setOnClickListener {
+            val selectedBook = bookViewModel.getBook().value
+
+            if(selectedBook != null){
+                titleText.text = "NOW PLAYING: " + selectedBook.title
+                durationBar.max = selectedBook.duration
+            }
+            (activity as ControlClick).playClick(durationInt)
+        }
+        pauseButton.setOnClickListener {
+            val selectedBook = bookViewModel.getBook().value
+            if (selectedBook != null){
+                durationInt = durationBar.progress
+            }
+            (activity as ControlClick).pauseClick()
+        }
+        stopButton.setOnClickListener {
+            durationInt = 0
+            durationBar.progress = 0
+            (activity as ControlClick).stopClick()
+        }
+        durationBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(bar: SeekBar, progress: Int, p2: Boolean) {
+                val selectedBook = bookViewModel.getBook().value
+                if(selectedBook != null){
+                    durationText.text = progress.toString()
                 }
             }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+                (activity as ControlClick).pauseClick()
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+                val selectedBook = bookViewModel.getBook().value
+                if(selectedBook != null){
+                    durationInt = durationBar.progress
+                    durationText.text = durationInt.toString()
+                    (activity as ControlClick).playClick(durationInt)
+                }
+            }
+        })
     }
+
+        interface ControlClick{
+            fun playClick(durationTime: Int)
+            fun pauseClick()
+            fun stopClick()
+            fun seekBarClick()
+        }
+
 }
