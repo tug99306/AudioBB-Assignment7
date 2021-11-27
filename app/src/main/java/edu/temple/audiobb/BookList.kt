@@ -4,7 +4,7 @@ import java.io.Serializable
 
 class BookList : ViewModel(), Serializable {
     companion object {
-        val BOOKLIST_KEY = "bookList"
+        const val BOOKLIST_KEY = "bookList"
     }
     private val bookList = ArrayList<Book>()
 
