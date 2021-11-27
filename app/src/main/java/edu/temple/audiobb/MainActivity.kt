@@ -16,7 +16,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import edu.temple.audlibplayer.PlayerService
-import org.w3c.dom.Text
 
 
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search, ControlFragment.ControlClick{
@@ -24,39 +23,43 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookL
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     var connection = false
     private lateinit var bookListFragment: BookListFragment
-    private lateinit var controlBinder: PlayerService.MediaControlBinder
+    private lateinit var mediaControlBinder: PlayerService.MediaControlBinder
 
     companion object{
         const val BOOKLISTFRAGMENTKEY = "BookListFragment"
     }
+
     private val isSingleContainer : Boolean by lazy{
         findViewById<View>(R.id.fragmentContainerView2) == null
     }
+
     private val bookViewModel : BookList by lazy{
         ViewModelProvider(this).get(BookList::class.java)
     }
+
     private val selectedBookView : BookViewModel by lazy{
         ViewModelProvider(this).get(BookViewModel::class.java)
     }
+
     val durationBarHandler = Handler(Looper.getMainLooper()){
         if (it.obj != null){
             val audioDurationObj = it.obj as PlayerService.BookProgress
             val durationTime = audioDurationObj.progress
             //val duration = selectedBookView.getBook().value?.duration
 
-            var durationText = findViewById<TextView>(R.id.durationText)
+            val durationText = findViewById<TextView>(R.id.durationText)
             durationText.text = durationTime.toString()
 
-            var durationBar = findViewById<SeekBar>(R.id.durationBar)
+            val durationBar = findViewById<SeekBar>(R.id.durationBar)
             durationBar.progress = durationTime
         }
         true
     }
-    val serviceConnection = object: ServiceConnection{
+    private val serviceConnection = object: ServiceConnection{
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             connection = true
-            controlBinder = service as PlayerService.MediaControlBinder
-            controlBinder.setProgressHandler(durationBarHandler)
+            mediaControlBinder = service as PlayerService.MediaControlBinder
+            mediaControlBinder.setProgressHandler(durationBarHandler)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -135,20 +138,20 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookL
         val selectedBook = selectedBookView.getBook().value
         if(selectedBook != null){
             if (durationTime > 0){
-                controlBinder.seekTo(durationTime)
-                controlBinder.pause()
+                mediaControlBinder.seekTo(durationTime)
+                mediaControlBinder.pause()
             } else {
-                controlBinder.play(selectedBook.id)
+                mediaControlBinder.play(selectedBook.id)
             }
         }
     }
 
     override fun pauseClick() {
-        controlBinder.pause()
+        mediaControlBinder.pause()
     }
 
     override fun stopClick() {
-        controlBinder.stop()
+        mediaControlBinder.stop()
     }
 
     // Implemented in ControlClick Interface
