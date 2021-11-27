@@ -13,11 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 
 class ControlFragment : Fragment() {
 
-    lateinit var playButton: Button
-    lateinit var stopButton: Button
-    lateinit var pauseButton: Button
+    private lateinit var playButton: Button
+    private lateinit var stopButton: Button
+    private lateinit var pauseButton: Button
     lateinit var durationBar: SeekBar
-    lateinit var titleText: TextView
+    private lateinit var titleText: TextView
     lateinit var durationText: TextView
     var durationInt: Int = 0
 
@@ -46,7 +46,7 @@ class ControlFragment : Fragment() {
             val selectedBook = bookViewModel.getBook().value
 
             if(selectedBook != null){
-                titleText.text = "NOW PLAYING: " + selectedBook.title
+                titleText.text = getString(R.string.nowPlaying) + selectedBook.title
                 durationBar.max = selectedBook.duration
             }
             (activity as ControlClick).playClick(durationInt)
