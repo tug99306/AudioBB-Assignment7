@@ -4,121 +4,156 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.app.Activity
-import android.util.Log
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import edu.temple.audlibplayer.PlayerService
+import org.w3c.dom.Text
 
 
-class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search {
-
-    private var twoFragment = false
-    private var initialLoad = false
-    private lateinit var bookViewModel: BookViewModel
-    private var bookList : BookList = BookList()
+class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, BookListFragment.Search, ControlFragment.ControlClick{
     private lateinit var startForResult: ActivityResultLauncher<Intent>
+    var connection = false
+    private lateinit var bookListFragment: BookListFragment
+    private lateinit var controlBinder: PlayerService.MediaControlBinder
 
+    companion object{
+        const val BOOKLISTFRAGMENT_KEY = "BookListFragment"
+    }
+    private val isSingleContainer : Boolean by lazy{
+        findViewById<View>(R.id.fragmentContainerView2) == null
+    }
+    private val bookViewModel : BookList by lazy{
+        ViewModelProvider(this).get(BookList::class.java)
+    }
+    private val selectedBookView : BookViewModel by lazy{
+        ViewModelProvider(this).get(BookViewModel::class.java)
+    }
+    val durationBarHandler = Handler(Looper.getMainLooper()){
+        if (it.obj != null){
+            val audioDurationObj = it.obj as PlayerService.BookProgress
+            val durationTime = audioDurationObj.progress
+            //val duration = selectedBookView.getBook().value?.duration
+
+            var durationText = findViewById<TextView>(R.id.durationText)
+            durationText.text = durationTime.toString()
+
+            var durationBar = findViewById<SeekBar>(R.id.durationBar)
+            durationBar.progress = durationTime
+        }
+        true
+    }
+    val serviceConnection = object: ServiceConnection{
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            connection = true
+            controlBinder = service as PlayerService.MediaControlBinder
+            controlBinder.setProgressHandler(durationBarHandler)
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            connection = false
+        }
+    }
+    private val searchRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        supportFragmentManager.popBackStack()
+        it.data?.run{
+            bookViewModel.addBooks(getSerializableExtra(BookList.BOOKLIST_KEY) as BookList)
+            bookListFragment.bookListUpdate()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        twoFragment = findViewById<View>(R.id.fragmentContainerView2) != null
-        bookViewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        supportFragmentManager.beginTransaction().add(R.id.controlContainer, ControlFragment()).commit()
+        bindService(Intent(this, PlayerService::class.java), serviceConnection, BIND_AUTO_CREATE)
 
-        startForResult = registerForActivityResult(StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                if (it.data != null) {
-                    val jsonBook = it.data?.getSerializableExtra("jsonbooklist") as BookList
-                    bookList.clear()
-                    for (i in 0 until jsonBook.getSize()) {
-                        Log.i("Received Book:", jsonBook.getBook(i).title)
-                        bookList.add(jsonBook.getBook(i))
-                    }
-                    if (initialLoad) {
-                        fragmentInit()
-                        initialLoad = false
-                    } else {
-                        if (supportFragmentManager.fragments[0] !is BookListFragment) {
-                            (supportFragmentManager.fragments[1] as BookListFragment)
-                                .updateBookList(bookList)
-                        } else {
-                            (supportFragmentManager.fragments[0] as BookListFragment)
-                                .updateBookList(bookList)
-                        }
-                    }
-                }
-            }
+        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment
+            && selectedBookView.getBook().value != null) {
+            supportFragmentManager.popBackStack()
         }
+
+        // If this is the first time the activity is loading, go ahead and add a BookListFragment
         if (savedInstanceState == null) {
-            initialLoad = true
-            doSearch()
-        } else {
-            fragmentInit()
-        }
-    }
-
-    // A message from the fragment whenever a book is selected
-    override fun selectionMade(){
-
-        //Replace BookListFragment with BookDetailsFragment when a book is selected in portrait mode
-        if(!twoFragment) {
+            bookListFragment = BookListFragment()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
-                .addToBackStack(null)
+                .add(R.id.fragmentContainerView1, bookListFragment, BOOKLISTFRAGMENT_KEY)
                 .commit()
-        }
-        else{
-            //Add BookDetailsFragment to Fragment2 when a book is selected in landscape mode
-            if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null){
+        } else {
+            bookListFragment = supportFragmentManager.findFragmentByTag(BOOKLISTFRAGMENT_KEY) as BookListFragment
+            // If activity loaded previously, there's already a BookListFragment
+            // If we have a single container and a selected book, place it on top
+            if (isSingleContainer && selectedBookView.getBook().value != null) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
+                    .replace(R.id.fragmentContainerView1, BookDetailsFragment())
+                    .setReorderingAllowed(true)
                     .addToBackStack(null)
                     .commit()
             }
         }
-    }
-    private fun fragmentInit(){
 
-    if(initialLoad) {
-        bookViewModel.setBook(Book(-1,"","", ""))
-        if (twoFragment) {
+        // If we have two containers but no BookDetailsFragment, add one to container2
+        if (!isSingleContainer && supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) !is BookDetailsFragment)
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
+                .add(R.id.fragmentContainerView2, BookDetailsFragment())
                 .commit()
-        } else {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView1, BookListFragment.newInstance(bookList))
-                .addToBackStack(null)
-                .commit()
-        }
-    }
 
-        if(twoFragment){
-            if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment){
-                supportFragmentManager.popBackStack()
-            }
-            if(supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) == null){
-                supportFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainerView2, BookDetailsFragment.newInstance())
-                    .commit()
-            }
-        }else if (bookViewModel.getBook().value != Book(-1,"","", "")){
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView1, BookDetailsFragment.newInstance())
-                .addToBackStack(null)
-                .commit()
+        findViewById<Button>(R.id.mainSearchButton).setOnClickListener {
+            searchRequest.launch(Intent(this, BookSearchActivity::class.java))
         }
 
     }
 
     override fun onBackPressed(){
         super.onBackPressed()
-        bookViewModel.setBook(Book(-1,"","", ""))
+        selectedBookView.setBook(null)
     }
+
+    override fun selectionMade(book: Book) {
+        if (isSingleContainer) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView1, BookDetailsFragment())
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
 
 
     override fun doSearch(){
         startForResult.launch(Intent(this, BookSearchActivity::class.java))
+    }
+
+    override fun playClick(durationTime: Int) {
+        val selectedBook = selectedBookView.getBook().value
+        if(selectedBook != null){
+            if (durationTime > 0){
+                controlBinder.seekTo(durationTime)
+                controlBinder.pause()
+            } else {
+                controlBinder.play(selectedBook.id)
+            }
+        }
+    }
+
+    override fun pauseClick() {
+        controlBinder.pause()
+    }
+
+    override fun stopClick() {
+        controlBinder.stop()
+    }
+
+    override fun seekBarClick() {
+        TODO("Not yet implemented")
     }
 }
