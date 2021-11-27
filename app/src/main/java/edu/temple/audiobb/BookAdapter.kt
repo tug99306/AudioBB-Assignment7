@@ -7,30 +7,34 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.TextView
 
-class BookAdapter(_context: Context, _books: BookList, _onClick: View.OnClickListener) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(_books: BookList, _onClick: (Book) -> Unit) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
-    private val inflater = LayoutInflater.from(_context)
     private val books = _books
     private val onClick = _onClick
 
 
-    class BookViewHolder(_itemView: View) : RecyclerView.ViewHolder(_itemView){
-        val view = _itemView
-        val bookTitleView : TextView = _itemView.findViewById(R.id.bookTitleView)
-        val bookAuthorView : TextView = _itemView.findViewById(R.id.bookAuthorView)
-
+    class BookViewHolder(_itemView: View, onClick : (Book) -> Unit) : RecyclerView.ViewHolder(_itemView){
+        val bookTitleView : TextView
+        val bookAuthorView : TextView
+        lateinit var book:Book
+        init{
+            bookTitleView = _itemView.findViewById(R.id.bookTitleView)
+            bookAuthorView = _itemView.findViewById(R.id.bookAuthorView)
+            bookTitleView.setOnClickListener{
+                onClick(book)
+            }
+        }
 
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookAdapter.BookViewHolder {
-        val view = inflater.inflate(R.layout.bookrecycler, null)
-        return BookViewHolder(view)
+        return BookViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.bookrecycler, parent, false), onClick)
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         holder.bookTitleView.text = books.getBook(position).title
         holder.bookAuthorView.text = books.getBook(position).author
-        holder.view.setOnClickListener(onClick)
+        holder.book = books.getBook(position)
     }
 
     override fun getItemCount(): Int {

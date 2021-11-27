@@ -15,8 +15,10 @@ class BookViewModel : ViewModel() {
         return book
     }
 
-    fun setBook(_book: Book){
+    fun setBook(_book: Book?){
         book.value = _book
     }
+
+
 
 }
