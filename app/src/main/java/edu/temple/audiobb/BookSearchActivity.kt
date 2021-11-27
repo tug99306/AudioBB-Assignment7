@@ -1,5 +1,6 @@
 package edu.temple.audiobb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,7 +26,7 @@ class BookSearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_book_search)
 
         val searchEditText = findViewById<EditText>(R.id.searchEditText)
-        val searchButton = findViewById<Button>(R.id.searchButton)
+        val searchButton = findViewById<Button>(R.id.mainSearchButton)
 
         searchButton.setOnClickListener {
             fetchBook(searchEditText.text.toString())
@@ -50,9 +51,8 @@ class BookSearchActivity : AppCompatActivity() {
                             jsonObject.getInt("duration"))
                             bookList.add(book)
                         }
-                        val resultIntent = intent
-                        resultIntent.putExtra("jsonbooklist", bookList)
-                        setResult(RESULT_OK, resultIntent)
+                        setResult(RESULT_OK, Intent().putExtra(BookList.BOOKLIST_KEY, bookList)
+                        )
                         finish()
                     }
                     catch (e : JSONException){
