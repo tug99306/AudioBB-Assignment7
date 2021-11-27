@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,18 +42,18 @@ class BookListFragment : Fragment() {
 
     companion object {
         fun newInstance(_bookList: BookList): BookListFragment {
-            val frag = BookListFragment().apply {
+            return BookListFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable("bookList", _bookList)
                 }
             }
-            return frag
         }
     }
 
     interface EventInterface{
         fun selectionMade(book: Book)
     }
+
     interface Search{
         fun doSearch()
     }
