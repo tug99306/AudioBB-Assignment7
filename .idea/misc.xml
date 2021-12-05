@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/activity_book_search.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/activity_main.xml" value="0.13333333333333333" />
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/dual_pane.xml" value="0.20567375886524822" />
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/fragment_book_details.xml" value="0.12259371833839919" />
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/fragment_book_list.xml" value="0.20567375886524822" />
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/fragment_control.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB/app/src/main/res/layout-land/activity_main.xml" value="0.18958333333333333" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB/app/src/main/res/layout-large/activity_main.xml" value="0.1222264728385616" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB/app/src/main/res/layout-large/table.xml" value="0.1" />
