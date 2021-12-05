@@ -30,7 +30,7 @@ class BookListFragment : Fragment() {
         val bookViewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
         val onClick : (Book) -> Unit ={
             book: Book -> bookViewModel.setBook(book)
-            (activity as EventInterface).selectionMade(book)
+            (activity as EventInterface).selectionMade()
         }
         with (view as RecyclerView){
             layoutManager = LinearLayoutManager(requireContext())
@@ -51,7 +51,7 @@ class BookListFragment : Fragment() {
     }
 
     interface EventInterface{
-        fun selectionMade(book: Book)
+        fun selectionMade()
     }
 
     interface Search{
