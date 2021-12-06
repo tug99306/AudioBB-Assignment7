@@ -45,14 +45,13 @@ class BookSearchActivity : AppCompatActivity() {
                         for(i in 0 until it.length()){
                             val jsonObject = it.getJSONObject(i)
                             val book = Book(jsonObject.getInt("id"),
-                            jsonObject.getString("title"),
-                            jsonObject.getString("author"),
-                            jsonObject.getString("cover_url"),
-                            jsonObject.getInt("duration"))
+                                jsonObject.getString("title"),
+                                jsonObject.getString("author"),
+                                jsonObject.getInt("duration"),
+                                jsonObject.getString("cover_url"))
                             bookList.add(book)
                         }
-                        setResult(RESULT_OK, Intent().putExtra(BookList.BOOKLIST_KEY, bookList)
-                        )
+                        setResult(RESULT_OK, Intent().putExtra(BookList.BOOKLIST_KEY, bookList))
                         finish()
                     }
                     catch (e : JSONException){
