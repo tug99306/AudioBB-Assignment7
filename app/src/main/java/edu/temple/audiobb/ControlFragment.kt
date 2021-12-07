@@ -12,9 +12,9 @@ import android.widget.TextView
 
 class ControlFragment : Fragment() {
 
-    private lateinit var playButton: Button
-    private lateinit var stopButton: Button
-    private lateinit var pauseButton: Button
+     lateinit var playButton: Button
+     lateinit var stopButton: Button
+     lateinit var pauseButton: Button
     var durationBar: SeekBar? = null
     var titleText: TextView? = null
     lateinit var durationText: TextView

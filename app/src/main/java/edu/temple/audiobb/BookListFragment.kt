@@ -54,11 +54,6 @@ class BookListFragment : Fragment() {
         fun selectionMade()
     }
 
-    interface Search{
-        fun doSearch()
-    }
-
-
 
     fun bookListUpdate(){
         view?.apply{

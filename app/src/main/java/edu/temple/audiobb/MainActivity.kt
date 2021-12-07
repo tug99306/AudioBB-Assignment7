@@ -1,14 +1,13 @@
 package edu.temple.audiobb
 
-import android.content.Intent
+import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.content.ComponentName
-import android.content.ServiceConnection
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
@@ -19,15 +18,21 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import edu.temple.audlibplayer.PlayerService
+import java.io.File
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
 
+private const val SAVE_KEY = "save_key"
 
 class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, ControlFragment.ControlInterface{
-
     //private lateinit var startForResult: ActivityResultLauncher<Intent>
     private lateinit var serviceIntent : Intent
     var connection = false
     private lateinit var bookListFragment: BookListFragment
     private lateinit var mediaControlBinder: PlayerService.MediaControlBinder
+    private lateinit var sharedPref : SharedPreferences
+    private lateinit var progressArrayFile: File
+    var durationHashMap = HashMap<Int, Int>()
 
     companion object{
         const val BOOKLISTFRAGMENTKEY = "BookListFragment"
@@ -49,6 +54,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
     }
 
     val durationBarHandler = Handler(Looper.getMainLooper()){ msg ->
+
         msg.obj?.let { msgObj ->
             val bookProgress = msgObj as PlayerService.BookProgress
 
@@ -68,6 +74,8 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
                         }
                     }, {}))
             }
+            durationHashMap[selectedBookView.getBook().value!!.id] = bookProgress.progress
+
             supportFragmentManager.findFragmentById(R.id.controlContainer)?.run{
                 with (this as ControlFragment) {
                     playingBookViewModel.getPlayingBook().value?.also {
@@ -106,6 +114,12 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        progressArrayFile = File(filesDir, "CurrentProgress")
+        if(!progressArrayFile.exists()){
+            progressArrayFile.createNewFile()
+        }
+        sharedPref = getSharedPreferences("save_key", Context.MODE_PRIVATE)
+
         playingBookViewModel.getPlayingBook().observe(this, {
             (supportFragmentManager.findFragmentById(R.id.controlContainer) as ControlFragment).setNowPlaying(it.title)
         })
@@ -114,8 +128,6 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
 
         bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
 
-        supportFragmentManager.beginTransaction().add(R.id.controlContainer, ControlFragment()).commit()
-        bindService(Intent(this, PlayerService::class.java), serviceConnection, BIND_AUTO_CREATE)
 
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView1) is BookDetailsFragment
             && selectedBookView.getBook().value != null) {
@@ -150,6 +162,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
     }
 
     override fun onBackPressed(){
+        saveDuration()
         selectedBookView.setBook(null)
         super.onBackPressed()
     }
@@ -167,9 +180,28 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
 
 
     override fun play() {
-        if(connection && selectedBookView.getBook().value != null){
-            mediaControlBinder.play(selectedBookView.getBook().value!!.id)
-            playingBookViewModel.setPlayingBook(selectedBookView.getBook().value)
+        if(connection && selectedBookView.getBook().value != null) {
+
+            val bookSelected = selectedBookView.getBook().value
+            var bookUrl = "https://kamorris.com/lab/audlib/download.php?id=" + bookSelected!!.id
+
+            if(!(durationHashMap.containsKey(bookSelected.id))){
+                var durationList = getSharedPreferences(progressArrayFile.name, Context.MODE_PRIVATE)
+                var time = durationList.getInt(bookSelected.id.toString(), 0)
+                durationHashMap[bookSelected.id] = time
+            }
+
+            if (checkFiles("${bookSelected.id}.mp3")) {
+                Log.d("play", "downloaded file")
+                mediaControlBinder.play(File(filesDir, "${bookSelected!!.id}"), durationHashMap[bookSelected.id]!!)
+            } else {
+                Log.d("stream","mp3 download")
+                mediaControlBinder.seekTo(durationHashMap[bookSelected.id]!!)
+                mediaControlBinder.play(bookSelected!!.id)
+                DownloadAudioBook(this, bookSelected!!.id.toString()).execute(bookUrl)
+
+            }
+            playingBookViewModel.setPlayingBook(bookSelected)
             startService(serviceIntent)
         }
     }
@@ -183,6 +215,7 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
     override fun stop() {
         if (connection){
             mediaControlBinder.stop()
+            durationHashMap[selectedBookView.getBook().value!!.id] = 0
             stopService(serviceIntent)
         }
     }
@@ -195,8 +228,27 @@ class MainActivity : AppCompatActivity(), BookListFragment.EventInterface, Contr
         }
     }
 
+    private fun saveDuration(){
+        var durations = getSharedPreferences(progressArrayFile.name, Context.MODE_PRIVATE)
+        var prefEdit = durations.edit()
+        for(i in durationHashMap.keys) {
+            prefEdit.putInt(i.toString(), durationHashMap[i]!!)
+        }
+        prefEdit.apply()
+    }
+
+    private fun checkFiles(fileName : String): Boolean{
+        val path: String
+        path = this.filesDir.absolutePath.toString() + "/" + fileName
+        val currentFile = File(path)
+        return currentFile.exists()
+    }
+
     override fun onDestroy() {
+        saveDuration()
         super.onDestroy()
         unbindService(serviceConnection)
     }
+
+
 }

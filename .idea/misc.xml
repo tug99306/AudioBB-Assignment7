@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout-land/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout-large/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/activity_book_search.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/activity_main.xml" value="0.13333333333333333" />
         <entry key="..\:/Users/salee/AndroidStudioProjects/AudioBB-Assignment7/app/src/main/res/layout/dual_pane.xml" value="0.20567375886524822" />

@@ -8,7 +8,7 @@ class BookViewModel : ViewModel() {
 
 
     private val book : MutableLiveData<Book> by lazy {
-        MutableLiveData<Book>()
+        MutableLiveData()
     }
 
     fun getBook() : LiveData<Book>{

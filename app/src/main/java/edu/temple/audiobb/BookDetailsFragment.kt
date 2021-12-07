@@ -21,7 +21,6 @@ import com.squareup.picasso.Picasso
  */
 class BookDetailsFragment : Fragment() {
 
-    lateinit var layout: View
     lateinit var bookName: TextView
     lateinit var bookAuthor : TextView
     lateinit var bookImage : ImageView
@@ -35,37 +34,33 @@ class BookDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        layout = inflater.inflate(R.layout.fragment_book_details, container, false)
+
+        val layout = inflater.inflate(R.layout.fragment_book_details, container, false)
+        bookName = layout.findViewById(R.id.detailBookTitle)
+        bookAuthor = layout.findViewById(R.id.detailBookAuthor)
+        bookImage = layout.findViewById(R.id.coverImageView)
+
         return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bookName = view.findViewById(R.id.detailBookTitle)
-        bookAuthor = view.findViewById(R.id.detailBookAuthor)
-        bookImage = view.findViewById(R.id.coverImageView)
 
         ViewModelProvider(requireActivity())
             .get(BookViewModel::class.java)
             .getBook()
-            .observe(viewLifecycleOwner, {updateDetails()})
+            .observe(viewLifecycleOwner, {updateDetails(it)})
     }
 
-    private fun updateDetails (){
-        val book = ViewModelProvider(requireActivity())
-            .get(BookViewModel::class.java)
-            .getBook()
-        bookName.text = book.value?.title
-        bookAuthor.text = book.value?.author
-        Picasso.get()
-            .load(book.value?.cover_url)
-            .into(bookImage)
+    private fun updateDetails (book: Book?) {
+        book?.run {
+            bookName.text = title
+            bookAuthor.text = author
+            Picasso.get()
+                .load(cover_url)
+                .into(bookImage)
+        }
     }
-
-    companion object{
-        fun newInstance() = BookDetailsFragment()
-    }
-
 
 }
